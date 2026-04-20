@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor de Tesis — Ciencias Sociales</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F4EF;
+      --surface: #FFFFFF;
+      --border: #E2DDD6;
+      --text: #1A1714;
+      --text-muted: #7A7469;
+      --accent: #2D5016;
+      --accent-light: #EBF2E3;
+      --accent-mid: #4A8025;
+      --phase-1: #1A3A5C;
+      --phase-2: #2D5016;
+      --phase-3: #6B2D00;
+      --phase-4: #3D1A5C;
+      --done: #4A8025;
+      --done-bg: #EBF2E3;
+      --score-low: #C0392B;
+      --score-mid: #E67E22;
+      --score-high: #27AE60;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: var(--bg);
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .login-logo {
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 26px;
+    }
+
+    .login-card h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 13px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .google-btn:hover { background: var(--bg); border-color: #BDBDB5; }
+
+    .google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .login-footer {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── MAIN APP ── */
+    #app-screen { display: none; min-height: 100vh; }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: -0.3px;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--border);
+    }
+
+    .avatar-placeholder {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .user-name {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s;
+    }
+    .logout-btn:hover { background: var(--bg); }
+
+    .main-layout {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* ── PHASES ── */
+    .phases-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .phases-header h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .phases-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .phases-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .phase-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .phase-card:hover { border-color: #BDBDB5; }
+
+    .phase-card.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .phase-card.done {
+      border-color: var(--done);
+      background: var(--done-bg);
+    }
+
+    .phase-card.locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .phase-num {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .phase-card.active .phase-num { color: var(--accent-mid); }
+    .phase-card.done .phase-num { color: var(--done); }
+
+    .phase-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .phase-score {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .phase-card.done .phase-score { color: var(--done); }
+
+    .check-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 16px;
+      height: 16px;
+      background: var(--done);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .check-icon::after {
+      content: '';
+      width: 8px;
+      height: 5px;
+      border-left: 1.5px solid white;
+      border-bottom: 1.5px solid white;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+
+    /* ── CHAT ── */
+    .chat-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .chat-phase-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-phase-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .progress-pill {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .progress-pill.good { background: var(--done-bg); color: var(--done); border-color: var(--done); }
+
+    .chat-messages {
+      padding: 1.25rem;
+      min-height: 320px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 11px 15px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .msg.ai {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      align-self: flex-start;
+      border-radius: 4px 14px 14px 14px;
+    }
+
+    .msg.user {
+      background: var(--accent);
+      color: white;
+      align-self: flex-end;
+      border-radius: 14px 4px 14px 14px;
+    }
+
+    .msg.system {
+      align-self: center;
+      background: #FFF3CD;
+      color: #856404;
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #FFEEBA;
+      max-width: 100%;
+      text-align: center;
+    }
+
+    .msg.error {
+      background: #FDECEA;
+      color: #C0392B;
+      border: 1px solid #FADBD8;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .score-label { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+    .score-track {
+      flex: 1;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    .score-num { font-size: 11px; font-weight: 500; white-space: nowrap; }
+
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 12px 15px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px 14px 14px 14px;
+      align-self: flex-start;
+      width: fit-content;
+    }
+
+    .typing-dot {
+      width: 7px; height: 7px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* ── INPUT ── */
+    .chat-input-area {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .chat-input-area textarea {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      resize: none;
+      min-height: 42px;
+      max-height: 120px;
+      line-height: 1.5;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .chat-input-area textarea:focus { border-color: var(--accent); }
+    .chat-input-area textarea::placeholder { color: var(--text-muted); }
+
+    .send-btn {
+      width: 42px; height: 42px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .send-btn:hover { background: var(--accent-mid); }
+    .send-btn:active { transform: scale(0.95); }
+    .send-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+    .send-btn svg { width: 18px; height: 18px; fill: white; }
+
+    /* ── NEXT PHASE BTN ── */
+    .next-phase-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--done-bg);
+      border: 1px solid var(--done);
+      border-radius: 10px;
+      color: var(--done);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: none;
+      transition: background 0.15s;
+    }
+    .next-phase-btn:hover { background: #D5ECBD; }
+
+    /* ── FINAL SUMMARY ── */
+    .final-summary {
+      margin-top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: none;
+    }
+
+    .final-summary h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 18px;
+      font-weight: 300;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .summary-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .summary-item:last-child { border-bottom: none; }
+    .summary-item strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">📚</div>
+    <h1>Tutor de Tesis</h1>
+    <p>Asistente inteligente para desarrollar tu tesis en Ciencias Sociales, paso a paso.</p>
+    <button class="google-btn" onclick="loginWithGoogle()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Continuar con Google
+    </button>
+    <p class="login-footer">Solo para estudiantes con cuenta institucional o personal de Google.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <nav class="topbar">
+    <span class="topbar-brand">Tutor de Tesis</span>
+    <div class="topbar-user">
+      <img id="user-avatar" class="avatar" src="" alt="" style="display:none">
+      <div id="user-avatar-placeholder" class="avatar-placeholder" style="display:none"></div>
+      <span id="user-name-display" class="user-name"></span>
+      <button class="logout-btn" onclick="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="main-layout">
+    <div class="phases-header">
+      <h2 id="greeting">Bienvenido/a</h2>
+      <p>Completa cada fase para avanzar. Necesitas al menos 80/100 para continuar.</p>
+    </div>
+
+    <div class="phases-grid">
+      <div class="phase-card active" id="phase-btn-0" onclick="selectPhase(0)">
+        <div class="phase-num">Fase 1</div>
+        <div class="phase-title">Descubrimiento</div>
+        <div class="phase-score" id="score-display-0">Sin iniciar</div>
+      </div>
+      <div class="phase-card locked" id="phase-btn-1" onclick="selectPhase(1)">
+        <div class="phase-num">Fase 2</div>
+        <div class="phase-title">Estrategia</div>
+        <div class="phase-score" id="score-display-1">Bloqueada</div>
+      </div>
+      <div class="phase-card locked" id="phase-btn-2" onclick="selectPhase(2)">
+        <div class="phase-num">Fase 3</div>
+        <div class="phase-title">Metodología</div>
+        <div class="phase-score" id="score-display-2">Bloqueada</div>
+      </div>
+      <div class="phase-card locked" id="phase-btn-3" onclick="selectPhase(3)">
+        <div class="phase-num">Fase 4</div>
+        <div class="phase-title">Redacción</div>
+        <div class="phase-score" id="score-display-3">Bloqueada</div>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-phase-header">
+        <span class="chat-phase-title" id="chat-phase-title">Fase 1: Descubrimiento</span>
+        <span class="progress-pill" id="progress-pill">En progreso</span>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-area">
+        <textarea id="user-input" placeholder="Escribe tu respuesta aquí..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Enviar">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="next-phase-btn" id="next-phase-btn" onclick="goNextPhase()">
+      Continuar a la siguiente fase →
+    </button>
+
+    <div class="final-summary" id="final-summary">
+      <h3>Tu tesis está tomando forma</h3>
+      <div id="summary-items"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc }
+    from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHBE-1b4po9rFmVlLdYIcn5uQUcKq_moI",
+    authDomain: "tutor-de-tesis-de-posgrado.firebaseapp.com",
+    projectId: "tutor-de-tesis-de-posgrado",
+    storageBucket: "tutor-de-tesis-de-posgrado.firebasestorage.app",
+    messagingSenderId: "675627988424",
+    appId: "1:675627988424:web:0ffbe39cdda6881ca2bcfd",
+    measurementId: "G-GL4BV9H96Y"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  window._auth = auth;
+  window._db = db;
+  window._provider = provider;
+  window._signInWithPopup = signInWithPopup;
+  window._signOut = signOut;
+  window._doc = doc;
+  window._setDoc = setDoc;
+  window._getDoc = getDoc;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      window._currentUser = user;
+      showApp(user);
+      await loadProgress(user.uid);
+    } else {
+      window._currentUser = null;
+      showLogin();
+    }
+  });
+</script>
+
+<script>
+const PHASES_CONFIG = [
+  {
+    name: "Fase 1: Descubrimiento",
+    system: `Eres un tutor académico especializado en Ciencias Sociales. Tu rol es GUIAR al estudiante para que descubra y clarifique su tema de tesis mediante preguntas socráticas.
+
+REGLAS ESTRICTAS:
+- Haz UNA sola pregunta a la vez, nunca varias
+- Guía con preguntas, no des las respuestas tú
+- Cuando el estudiante haya definido: área temática, problema concreto y población de estudio, evalúa con este JSON EXACTO al final de tu respuesta: {"score": 85, "listo": true, "resumen": "descripción breve del tema"}
+- Si el avance es insuficiente, incluye: {"score": 45, "listo": false}
+- Si score >= 80 y listo=true, felicita y dile que puede avanzar
+- Responde SIEMPRE en español, tono amigable y motivador
+- Máximo 3 párrafos por respuesta`
+  },
+  {
+    name: "Fase 2: Estrategia",
+    system: `Eres un tutor académico de Ciencias Sociales. Ayudas a formular la pregunta de investigación, objetivos e hipótesis.
+
+REGLAS ESTRICTAS:
+- Alterna entre guiar con preguntas y generar borradores que el estudiante edite
+- Cuando el estudiante tenga: pregunta de investigación clara, objetivo general y al menos 1 hipótesis, incluye: {"score": 85, "listo": true, "resumen": "pregunta e hipótesis definidas"}
+- Si falta algo, incluye: {"score": 50, "listo": false}
+- Responde SIEMPRE en español, tono académico pero accesible`
+  },
+  {
+    name: "Fase 3: Metodología",
+    system: `Eres un tutor académico de Ciencias Sociales. Ayudas a diseñar la metodología de investigación.
+
+REGLAS ESTRICTAS:
+- Guía para elegir: enfoque (cualitativo/cuantitativo/mixto), método (entrevistas, encuesta, análisis documental, etc.) y diseño muestral
+- Genera borradores de secciones metodológicas que el estudiante pueda editar
+- Cuando tenga los tres elementos, incluye: {"score": 85, "listo": true, "resumen": "descripción del diseño metodológico"}
+- Responde SIEMPRE en español`
+  },
+  {
+    name: "Fase 4: Redacción",
+    system: `Eres un tutor-redactor académico de Ciencias Sociales. Generas borradores reales de secciones de tesis.
+
+REGLAS ESTRICTAS:
+- Pregunta qué sección redactar: introducción, marco teórico, planteamiento del problema, o justificación
+- Genera el borrador completo en formato académico apropiado para Ciencias Sociales
+- Después de cada borrador pregunta: ¿qué ajustes necesita?
+- Cuando el estudiante tenga al menos 1 sección redactada, incluye: {"score": 90, "listo": true, "resumen": "secciones completadas"}
+- Responde SIEMPRE en español, estilo académico formal`
+  }
+];
+
+const WELCOME_MSGS = [
+  "¡Hola! Bienvenido/a a tu tutor de tesis. Vamos a comenzar desde el principio: cuéntame, ¿en qué área de las Ciencias Sociales te interesa trabajar tu tesis? Por ejemplo: sociología, ciencias políticas, trabajo social, psicología social, comunicación, antropología...",
+  "Excelente trabajo en la fase anterior. Ahora vamos a darle estructura rigurosa a tu investigación. Dime brevemente el tema que definiste y empecemos a construir tu pregunta de investigación.",
+  "Muy bien, ya tienes tu pregunta de investigación. Ahora diseñaremos cómo vas a responderla. ¿Tienes alguna idea inicial sobre si tu investigación será más cualitativa (entrevistas, análisis de discurso, observación) o cuantitativa (encuestas, estadísticas, datos secundarios)?",
+  "¡Llegaste a la fase final! Ahora vamos a redactar secciones reales de tu tesis. ¿Con cuál te gustaría comenzar: la introducción, el planteamiento del problema, la justificación, o el marco teórico?"
+];
+
+let currentPhase = 0;
+let history = [[], [], [], []];
+let scores = [0, 0, 0, 0];
+let phaseDone = [false, false, false, false];
+let summaries = ["", "", "", ""];
+let loading = false;
+
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+}
+
+function showApp(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+
+  const name = user.displayName || user.email;
+  document.getElementById('greeting').textContent = `Hola, ${name.split(' ')[0]}`;
+  document.getElementById('user-name-display').textContent = name;
+
+  if (user.photoURL) {
+    const img = document.getElementById('user-avatar');
+    img.src = user.photoURL;
+    img.style.display = 'block';
+  } else {
+    const ph = document.getElementById('user-avatar-placeholder');
+    ph.textContent = name.charAt(0).toUpperCase();
+    ph.style.display = 'flex';
+  }
+}
+
+async function loadProgress(uid) {
+  try {
+    const ref = window._doc(window._db, 'students', uid);
+    const snap = await window._getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      scores = data.scores || [0,0,0,0];
+      phaseDone = data.phaseDone || [false,false,false,false];
+      summaries = data.summaries || ["","","",""];
+      history = data.history || [[],[],[],[]];
+      updateAllPhaseCards();
+    }
+  } catch(e) {}
+  initChat(currentPhase);
+}
+
+async function saveProgress() {
+  if (!window._currentUser) return;
+  try {
+    const ref = window._doc(window._db, 'students', window._currentUser.uid);
+    await window._setDoc(ref, { scores, phaseDone, summaries, history, updatedAt: new Date().toISOString() }, { merge: true });
+  } catch(e) {}
+}
+
+window.loginWithGoogle = async function() {
+  try {
+    await window._signInWithPopup(window._auth, window._provider);
+  } catch(e) {
+    alert('Error al iniciar sesión. Intenta de nuevo.');
+  }
+};
+
+window.logout = async function() {
+  await window._signOut(window._auth);
+};
+
+function initChat(idx) {
+  currentPhase = idx;
+  const chatEl = document.getElementById('chat-messages');
+  chatEl.innerHTML = '';
+  document.getElementById('next-phase-btn').style.display = 'none';
+  document.getElementById('chat-phase-title').textContent = PHASES_CONFIG[idx].name;
+  updateProgressPill(scores[idx]);
+
+  if (history[idx] && history[idx].length > 0) {
+    history[idx].forEach(m => {
+      if (m.role === 'assistant') addMsg(m.content, 'ai', false);
+      else if (m.role === 'user') addMsg(m.content, 'user', false);
+    });
+    if (phaseDone[idx]) {
+      document.getElementById('next-phase-btn').style.display = idx < 3 ? 'block' : 'none';
+      if (idx === 3) showFinalSummary();
+    }
+  } else {
+    const welcome = summaries[idx-1]
+      ? `${WELCOME_MSGS[idx]}\n\n(Contexto de tu fase anterior: ${summaries[idx-1]})`
+      : WELCOME_MSGS[idx];
+    addMsg(welcome, 'ai', true);
+    history[idx] = [{ role: 'assistant', content: welcome }];
+  }
+}
+
+window.selectPhase = function(idx) {
+  if (idx > 0 && !phaseDone[idx-1]) {
+    addSystemMsg(`Debes completar la Fase ${idx} antes de poder avanzar.`);
+    return;
+  }
+  document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`phase-btn-${idx}`).classList.add('active');
+  initChat(idx);
+};
+
+function addMsg(text, type, scroll=true) {
+  const chat = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${type}`;
+  const clean = text.replace(/\{"score"[\s\S]*?\}/g, '').trim();
+  div.textContent = clean;
+  chat.appendChild(div);
+  if (scroll) chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function addSystemMsg(text) {
+  const chat = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg system';
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addScoreToLastMsg(score) {
+  const chat = document.getElementById('chat-messages');
+  const last = chat.querySelector('.msg.ai:last-of-type');
+  if (!last) return;
+  const color = score >= 80 ? 'var(--score-high)' : score >= 60 ? 'var(--score-mid)' : 'var(--score-low)';
+  const row = document.createElement('div');
+  row.className = 'score-row';
+  row.innerHTML = `<span class="score-label">Avance</span>
+    <div class="score-track"><div class="score-fill" style="width:0%;background:${color}" id="sf-${Date.now()}"></div></div>
+    <span class="score-num" style="color:${color}">${score}/100</span>`;
+  last.appendChild(row);
+  setTimeout(() => {
+    const fill = row.querySelector('.score-fill');
+    if (fill) fill.style.width = score + '%';
+  }, 100);
+}
+
+function updateProgressPill(score) {
+  const pill = document.getElementById('progress-pill');
+  if (score === 0) { pill.textContent = 'Sin iniciar'; pill.className = 'progress-pill'; }
+  else if (score >= 80) { pill.textContent = `${score}/100 — Completa`; pill.className = 'progress-pill good'; }
+  else { pill.textContent = `${score}/100`; pill.className = 'progress-pill'; }
+}
+
+function updateAllPhaseCards() {
+  for (let i = 0; i < 4; i++) {
+    const card = document.getElementById(`phase-btn-${i}`);
+    const scoreDisp = document.getElementById(`score-display-${i}`);
+    card.classList.remove('active', 'done', 'locked');
+
+    if (phaseDone[i]) {
+      card.classList.add('done');
+      scoreDisp.textContent = `${scores[i]}/100 — Completa`;
+      if (!card.querySelector('.check-icon')) {
+        const chk = document.createElement('div');
+        chk.className = 'check-icon';
+        card.appendChild(chk);
+      }
+    } else if (i === 0 || phaseDone[i-1]) {
+      scoreDisp.textContent = scores[i] > 0 ? `${scores[i]}/100` : 'Sin iniciar';
+    } else {
+      card.classList.add('locked');
+      scoreDisp.textContent = 'Bloqueada';
+    }
+  }
+  document.getElementById(`phase-btn-${currentPhase}`).classList.add('active');
+}
+
+window.sendMessage = async function() {
+  if (loading) return;
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  addMsg(text, 'user');
+  history[currentPhase].push({ role: 'user', content: text });
+
+  loading = true;
+  document.getElementById('send-btn').disabled = true;
+
+  const chat = document.getElementById('chat-messages');
+  const typing = document.createElement('div');
+  typing.className = 'typing-indicator';
+  typing.id = 'typing';
+  typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  chat.appendChild(typing);
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const msgs = history[currentPhase]
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .slice(-12);
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: PHASES_CONFIG[currentPhase].system,
+        messages: msgs
+      })
+    });
+
+    document.getElementById('typing')?.remove();
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || "Lo siento, hubo un error. Intenta de nuevo.";
+    history[currentPhase].push({ role: 'assistant', content: reply });
+
+    addMsg(reply, 'ai');
+
+    const jsonMatch = reply.match(/\{"score"[\s\S]*?\}/);
+    if (jsonMatch) {
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        scores[currentPhase] = parsed.score || 0;
+        addScoreToLastMsg(parsed.score);
+        updateProgressPill(parsed.score);
+        updateAllPhaseCards();
+
+        if (parsed.listo && parsed.score >= 80) {
+          phaseDone[currentPhase] = true;
+          summaries[currentPhase] = parsed.resumen || "";
+          if (currentPhase < 3) {
+            document.getElementById('next-phase-btn').style.display = 'block';
+          } else {
+            showFinalSummary();
+          }
+          updateAllPhaseCards();
+        }
+        await saveProgress();
+      } catch(e) {}
+    }
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    addMsg("Error de conexión. Verifica tu API key y vuelve a intentarlo.", 'error');
+  }
+
+  loading = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('user-input').focus();
+};
+
+window.goNextPhase = function() {
+  const next = currentPhase + 1;
+  document.getElementById('next-phase-btn').style.display = 'none';
+  selectPhase(next);
+};
+
+function showFinalSummary() {
+  const el = document.getElementById('final-summary');
+  el.style.display = 'block';
+  const names = ['Descubrimiento', 'Estrategia', 'Metodología', 'Redacción'];
+  document.getElementById('summary-items').innerHTML = summaries
+    .map((s, i) => s ? `<div class="summary-item"><strong>Fase ${i+1} — ${names[i]}:</strong> ${s}</div>` : '')
+    .filter(Boolean).join('');
+}
+
+initChat(0);
+</script>
+</body>
+</html>
