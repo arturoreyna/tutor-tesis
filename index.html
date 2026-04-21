@@ -910,6 +910,8 @@ window.sendMessage = async function() {
   chat.appendChild(typing);
   chat.scrollTop = chat.scrollHeight;
 
+  const msgs = (history[currentPhase] || []).filter(m => m.role === 'user' || m.role === 'assistant').slice(-12);
+
   try {
    const res = await fetch("/api/chat", {
   method: "POST",
