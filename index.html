@@ -922,7 +922,7 @@ window.sendMessage = async function() {
 
     document.getElementById('typing')?.remove();
     const data = await res.json();
-    const reply = data.content?.[0]?.text || "Lo siento, hubo un error. Intenta de nuevo.";
+    const reply = data.content?.[0]?.text || JSON.stringify(data);
     history[currentPhase].push({ role: 'assistant', content: reply });
 
     addMsg(reply, 'ai');
