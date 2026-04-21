@@ -760,7 +760,7 @@ async function loadProgress(uid) {
       history = data.history || [[],[],[],[]];
       updateAllPhaseCards();
     }
-  } catch(e) {}
+  } catch(e) { console.error("ERROR DETALLADO:", e, e.message);}
   initChat(currentPhase);
 }
 
@@ -769,13 +769,13 @@ async function saveProgress() {
   try {
     const ref = window._doc(window._db, 'students', window._currentUser.uid);
     await window._setDoc(ref, { scores, phaseDone, summaries, history, updatedAt: new Date().toISOString() }, { merge: true });
-  } catch(e) {}
+  } catch(e) { console.error("ERROR DETALLADO:", e, e.message);}
 }
 
 window.loginWithGoogle = async function() {
   try {
     await window._signInWithPopup(window._auth, window._provider);
-  } catch(e) {
+  } catch(e) { console.error("ERROR DETALLADO:", e, e.message);
     alert('Error al iniciar sesión. Intenta de nuevo.');
   }
 };
@@ -947,9 +947,9 @@ window.sendMessage = async function() {
           updateAllPhaseCards();
         }
         await saveProgress();
-      } catch(e) {}
+      } catch(e) { console.error("ERROR DETALLADO:", e, e.message);}
     }
-  } catch(e) {
+  } catch(e) { console.error("ERROR DETALLADO:", e, e.message);
     document.getElementById('typing')?.remove();
     addMsg("Error de conexión. Verifica tu API key y vuelve a intentarlo.", 'error');
   }
